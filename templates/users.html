@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}All Users{% endblock %}
+{% block page_heading %}All Users{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-head"><div><h2>User Management</h2><p>Create, update, search and manage demo accounts.</p></div><a class="btn primary" href="{{ url_for('user_add') }}">＋ Add User</a></div>
+  <form class="toolbar" method="get"><input name="q" value="{{ q }}" placeholder="Search name, username, phone or email"><button class="btn dark" type="submit">Search</button>{% if q %}<a class="btn light" href="{{ url_for('users') }}">Clear</a>{% endif %}</form>
+  <div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Phone</th><th>Demo Points</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  {% for user in pagination.items %}<tr><td>{{ user.id }}</td><td>{{ user.name }}</td><td>{{ user.username }}</td><td>{{ user.phone or '—' }}</td><td>{{ "%.2f"|format(user.points or 0) }}</td><td><span class="status {{ user.status|lower }}">{{ user.status }}</span></td><td class="actions"><a class="btn tiny light" href="{{ url_for('user_edit', user_id=user.id) }}">Edit</a><form method="post" action="{{ url_for('wallet_adjust', user_id=user.id) }}" class="inline-adjust"><input name="amount" type="number" min="0.01" step="0.01" placeholder="Points" required><select name="kind"><option value="credit">Add</option><option value="debit">Deduct</option></select><button class="btn tiny violet-btn">Apply</button></form><form method="post" action="{{ url_for('user_delete', user_id=user.id) }}" onsubmit="return confirm('Delete this user and their demo transactions?')"><button class="btn tiny danger">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="7" class="empty">No users found.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="pagination"><span>Page {{ pagination.page }} of {{ pagination.pages or 1 }}</span><div>{% if pagination.has_prev %}<a href="{{ url_for('users', page=pagination.prev_num, q=q) }}">← Previous</a>{% endif %}{% if pagination.has_next %}<a href="{{ url_for('users', page=pagination.next_num, q=q) }}">Next →</a>{% endif %}</div></div>
+</section>
+{% endblock %}

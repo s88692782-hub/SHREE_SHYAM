@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SHREE SHYAM Admin{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+    <a class="brand" href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/shree-shyam-logo.svg') }}" alt="SHREE SHYAM" style="width:190px;height:52px;object-fit:contain;object-position:left center"></a>
+    <div class="top-actions"><span class="admin-label">Admin: {{ current_admin }}</span><a class="logout" href="{{ url_for('logout') }}">⏻ Logout</a></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <form class="sidebar-search" action="{{ url_for('users') }}" method="get">
+        <input name="q" placeholder="Search users..." aria-label="Search users"><button type="submit">⌕</button>
+      </form>
+      <nav>
+        {% for group in menu_groups %}
+          {% set group_id = "group-" ~ loop.index %}
+          <section class="nav-group">
+            {% if group.single %}
+              {% if group.single == 'dashboard' %}
+                <a class="nav-heading single {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">{{ group.icon }}</span>{{ group.label }}</a>
+              {% elif group.single == 'users' %}
+                <a class="nav-heading single {% if request.endpoint in ['users','user_add','user_edit'] %}active{% endif %}" href="{{ url_for('users') }}"><span class="nav-icon">{{ group.icon }}</span>{{ group.label }}</a>
+              {% else %}
+                <a class="nav-heading single" href="{{ url_for('module_page', slug=group.single) }}"><span class="nav-icon">{{ group.icon }}</span>{{ group.label }}</a>
+              {% endif %}
+            {% else %}
+              <button class="nav-heading group-toggle" type="button" data-target="{{ group_id }}"><span class="nav-icon">{{ group.icon }}</span>{{ group.label }}<span class="chevron">‹</span></button>
+              <div class="nav-children" id="{{ group_id }}">
+                {
+{% for label, slug in group["items"] %}
+    {% if slug == '/generate-result' %}
+        <a href="{{ url_for('generate_result') }}" class="nav-link">
+            {{ label }}
+        </a>
+    {% elif slug == 'deposit-summary' %}
+        <a href="{{ url_for('deposit_summary') }}" class="nav-link {% if request.endpoint == 'deposit_summary' %}active{% endif %}">{{ label }}</a>
+    {% elif slug == 'withdraw-summary' %}
+        <a href="{{ url_for('withdraw_summary') }}" class="nav-link {% if request.endpoint == 'withdraw_summary' %}active{% endif %}">{{ label }}</a>
+    {% elif slug == 'deposit-transactions' %}
+        <a href="{{ url_for('deposit_transactions') }}" class="nav-link {% if request.endpoint == 'deposit_transactions' %}active{% endif %}">{{ label }}</a>
+    {% elif slug == 'withdraw-transactions' %}
+        <a href="{{ url_for('withdraw_transactions') }}" class="nav-link {% if request.endpoint == 'withdraw_transactions' %}active{% endif %}">{{ label }}</a>
+    {% elif slug == 'settings' %}
+        <a href="{{ url_for('settings') }}" class="nav-link">{{ label }}</a>
+    {% elif slug in ['bell-notifications','send-notification','manage-contents'] %}
+        <a href="{{ url_for('notifications') }}" class="nav-link">{{ label }}</a>
+    {% else %}
+        <a href="{{ url_for('module_page', slug=slug) }}" class="nav-link {% if request.view_args and request.view_args.get('slug') == slug %}active{% endif %}">
+            {{ label }}
+        </a>
+    {% endif %}
+{% endfor %}
+
+              </div>
+            {% endif %}
+          </section>
+        {% endfor %}
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="page-top"><div><span class="eyebrow">ADMINISTRATION</span><h1>{% block page_heading %}Dashboard{% endblock %}</h1></div><span class="date-chip">{{ now_label }}</span></div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<div class="flash-wrap">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}<button type="button" class="flash-close" aria-label="Close">×</button></div>{% endfor %}</div>{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <footer>© {{ year }} SHREE SHYAM · Admin Panel</footer>
+    </main>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

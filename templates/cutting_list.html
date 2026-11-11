@@ -1,0 +1,93 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-3">
+
+    <h2>Cutting List</h2>
+
+    <div class="card p-3">
+        <form method="GET" action="{{ url_for('module_page', slug='cutting-list') }}">
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Date</label>
+                    <input type="date" name="date"
+                           class="form-control"
+                           value="{{ selected_date }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Game</label>
+                    <select name="game_id" class="form-select">
+                        <option value="">Select Game</option>
+                        {% for game in games %}
+                        <option value="{{ game.id }}">
+                            {{ game.game_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Session</label>
+                    <select name="session" class="form-select">
+                        <option value="">Select Session</option>
+                        <option value="Open">Open</option>
+                        <option value="Close">Close</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Submitted Bids Table -->
+    <div class="card p-3 mt-4">
+        <h4>Submitted Bids</h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Market</th>
+                        <th>Game</th>
+                        <th>Session</th>
+                        <th>Selection</th>
+                        <th>Points</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bid in bids %}
+                    <tr>
+                        <td>{{ bid.user.name if bid.user else 'Unknown' }}</td>
+                        <td>{{ bid.game_name }}</td>
+                        <td>{{ bid.game_type }}</td>
+                        <td>{{ bid.session }}</td>
+                        <td>{{ bid.selection }}</td>
+                        <td>{{ bid.points_used }}</td>
+                        <td>{{ bid.created_at.strftime('%d-%m-%Y %I:%M %p') if bid.created_at else '' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No bids found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SHREE SHYAM - User Login</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #25205c, #7952d8);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: white;
+            width: 90%;
+            max-width: 380px;
+            padding: 30px;
+            border-radius: 15px;
+            box-sizing: border-box;
+        }
+        h2 { text-align: center; color: #332477; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #5635bd;
+            color: white;
+            border: 0;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        a { color: #5635bd; }
+        .message { text-align: center; color: #b42318; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <img src="{{ url_for('static', filename='images/shree-shyam-logo.svg') }}" alt="SHREE SHYAM" style="display:block;width:180px;max-width:100%;height:auto;margin:0 auto 18px">
+        <h3>User Login</h3>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="username"
+                   placeholder="Enter Username" required>
+
+            <input type="password" name="password"
+                   placeholder="Enter Password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p>New user?
+            <a href="{{ url_for('register') }}">Create Account</a>
+        </p>
+    </div>
+</body>
+</html>

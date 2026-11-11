@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block page_heading %}Settings{% endblock %}
+{% block content %}<section class="panel form-panel"><div class="panel-head"><div><h2>Admin Security</h2><p>Update the password for the currently signed-in administrator.</p></div></div>
+<form method="post" class="form-grid"><label>New password<input type="password" name="new_password" minlength="8" required></label><label>Confirm new password<input type="password" name="confirm_password" minlength="8" required></label><div class="form-actions"><button class="btn primary">Update Password</button></div></form>
+<div class="notice-box"><strong>Demo-only environment</strong><p>Wallet values and transactions are simulated records. Do not enter real customer payment details.</p></div></section>{% endblock %}

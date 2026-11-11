@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if record else 'Add' }} · {{ title }}{% endblock %}
+{% block page_heading %}{{ 'Edit' if record else 'Add' }} {{ title }}{% endblock %}
+{% block content %}<section class="panel form-panel"><div class="panel-head"><div><h2>{{ 'Update' if record else 'New' }} {{ title }} Record</h2><p>Each module stores its own independent records.</p></div></div>
+<form method="post" class="form-grid">
+<label>Title / Name *<input name="title" required value="{{ record.title if record else '' }}" placeholder="Enter title or name"></label>
+<label>Value / Points<input name="value" type="number" step="0.01" value="{{ record.value if record else 0 }}"></label>
+<label class="span-2">Details / Description<textarea name="details" rows="5" placeholder="Enter details">{{ record.details if record else '' }}</textarea></label>
+<label>Status<select name="status">{% for s in ['Active','Pending','Completed','Approved','Rejected','Published','Inactive'] %}<option {% if record and record.status == s %}selected{% elif not record and s == 'Active' %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+<div class="form-actions"><button class="btn primary" type="submit">Save Record</button><a class="btn light" href="{{ url_for('module_page', slug=slug) }}">Cancel</a></div>
+</form></section>{% endblock %}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SHREE SHYAM - User Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f8;
+        }
+        header {
+            background: #332477;
+            color: white;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 15px;
+        }
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px #00000010;
+        }
+        .points {
+            color: #5635bd;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f5f2ff; }
+        .logout {
+            color: white;
+            text-decoration: none;
+        }
+        .table-wrap { overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<header>
+    <strong>SHREE SHYAM</strong>
+    <a class="logout" href="{{ url_for('user_logout') }}">Logout</a>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Welcome, {{ user.name }}!</h2>
+        <p>Username: {{ user.username }}</p>
+        <p>Demo Points</p>
+        <div class="points">{{ user.points }}</div>
+    </div>
+
+
+<div style="display:flex; gap:12px; flex-wrap:wrap; margin:20px 0;">
+    <a href="{{ url_for('user_deposit') }}"
+       style="background:#168b48;color:white;padding:12px 20px;border-radius:8px;text-decoration:none;">
+       💰 Deposit
+    </a>
+
+    <a href="{{ url_for('user_withdraw') }}"
+       style="background:#d97706;color:white;padding:12px 20px;border-radius:8px;text-decoration:none;">
+       💸 Withdraw
+    </a>
+</div>
+
+
+<a href="{{ url_for('user_play') }}"
+   style="
+   display:inline-block;
+   background:#5635bd;
+   color:white;
+   padding:13px 25px;
+   border-radius:8px;
+   text-decoration:none;
+   margin-top:15px;
+   font-weight:bold;">
+   🎮 Play Game
+</a>
+
+<div class="card">
+    <h3>Available Games</h3>
+
+    {% if markets %}
+        {% for market in markets %}
+            <div style="padding:12px; margin:10px 0;
+                        background:#f5f2ff; border-radius:8px;">
+                <h4>{{ market.name }}</h4>
+                <p>Market available</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No markets available.</p>
+    {% endif %}
+
+    <h3>Game Types</h3>
+
+    {% for game in game_rates %}
+        <div style="padding:12px; margin:8px 0;
+                    background:#f5f2ff; border-radius:8px;">
+            <strong>{{ game.game_name }}</strong>
+            <span style="float:right;">Rate: {{ game.rate }}</span>
+        </div>
+    {% else %}
+        <p>No games available.</p>
+    {% endfor %}
+</div>
+
+
+    <div class="card">
+        <h3>My Game History</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Game</th>
+                        <th>Type</th>
+                        <th>Selection</th>
+                        <th>Points Used</th>
+                        <th>Result</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td>{{ item.game_name }}</td>
+                        <td>{{ item.game_type }}</td>
+                        <td>{{ item.selection }}</td>
+                        <td>{{ item.points_used }}</td>
+                        <td>{{ item.result }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.created_at.strftime('%d-%m-%Y %I:%M %p') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No game history available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

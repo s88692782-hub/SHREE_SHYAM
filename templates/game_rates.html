@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Game Rates{% endblock %}
+{% block page_heading %}Game Rates{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-head"><div><h2>Game Rates</h2><p>Update the demo rate values for each game type.</p></div></div>
+  <div class="table-wrap"><table><thead><tr><th>#</th><th>Game Type</th><th>Rate</th><th>Update</th></tr></thead><tbody>
+  {% for item in rates %}<tr><td>{{ loop.index }}</td><td><strong>{{ item.game_name }}</strong></td><td>{{ item.rate|int if item.rate == item.rate|int else item.rate }}</td>
+  <td><form method="post" action="{{ url_for('game_rate_edit', rate_id=item.id) }}" class="inline-rate-form"><input type="number" name="rate" min="0" step="0.01" value="{{ item.rate }}" required><button class="btn tiny primary">Save</button></form></td></tr>
+  {% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

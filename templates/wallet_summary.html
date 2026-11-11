@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ kind }} Summary · SHREE SHYAM{% endblock %}
+{% block page_heading %}{{ kind }} Summary{% endblock %}
+{% block content %}
+<style>
+.summary-panel{background:#fff;border:1px solid #e5e3eb;border-radius:13px;padding:20px;margin-bottom:20px;box-shadow:0 3px 14px #2410440b}
+.summary-title{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:-20px -20px 18px;padding:16px 20px;border-radius:12px 12px 0 0;background:linear-gradient(100deg,#5822a4,#8c159e,#b51c48);color:white}
+.summary-title h2{font-size:21px;margin:0}.date-filter{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.date-filter input,.table-tools select,.table-tools input{padding:9px 11px;border:1px solid #d8d5df;border-radius:7px;background:white;font:inherit;max-width:100%}
+.summary-cards{display:grid;grid-template-columns:repeat({% if kind == 'Withdraw' %}4{% else %}2{% endif %},minmax(0,1fr));gap:14px;margin-bottom:18px}
+.summary-card{border-radius:10px;padding:17px;color:white;min-height:105px;background:linear-gradient(110deg,#0875ed,#167cf5)}
+.summary-card.green{background:linear-gradient(110deg,#119c45,#22bd61)}.summary-card.orange{background:linear-gradient(110deg,#f09a00,#ffbd27)}.summary-card.red{background:linear-gradient(110deg,#e91d2b,#ff4050)}.summary-card.light{background:#fff;color:#272333;border:1px solid #e2dfeb;box-shadow:0 2px 8px #0000000d}
+.summary-card .caption{font-size:14px;opacity:.9}.summary-card strong{display:block;font-size:27px;margin:5px 0}.summary-card small{font-size:12px}
+.table-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:15px 0}
+.report-table{width:100%;border-collapse:collapse;min-width:680px}.report-table th{background:#54218f;color:#fff;text-transform:none;font-size:13px}.report-table td,.report-table th{padding:12px 11px;border:1px solid #e2dfeb;text-align:left}.report-table tbody tr:nth-child(even){background:#f6f7fb}.report-table .empty{text-align:center;padding:24px}.report-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px;color:#777;font-size:13px}.report-footer a{padding:8px 12px;border:1px solid #ddd;border-radius:6px;text-decoration:none;color:#5b269c;margin-left:5px}.report-footer a.disabled{opacity:.4;pointer-events:none}.status-pill{padding:4px 8px;border-radius:20px;background:#fff1d6;color:#98620a;font-size:12px;font-weight:700}
+@media(max-width:760px){.summary-panel{padding:14px}.summary-title{margin:-14px -14px 14px;padding:14px}.summary-cards{grid-template-columns:1fr}.summary-title h2{font-size:19px}.date-filter{width:100%}.date-filter input{flex:1;min-width:120px}}
+</style>
+<section class="summary-panel">
+ <div class="summary-title"><h2>▣ {{ kind }} Summary</h2>
+  <form class="date-filter" method="get">
+   <input type="date" name="start_date" value="{{ start_date }}" aria-label="Start date">
+   <span>to</span><input type="date" name="end_date" value="{{ end_date }}" aria-label="End date">
+   <input type="hidden" name="q" value="{{ search }}"><input type="hidden" name="show" value="{{ per_page }}">
+   <button class="btn" style="background:#fff;color:#5b269c" type="submit">Search</button>
+  </form>
+ </div>
+ <div class="summary-cards">
+  <div class="summary-card"><div class="caption">Total {{ 'Deposits' if kind == 'Deposit' else 'Withdraw' }}</div><strong>₹{{ '%.2f'|format(total_amount) }}</strong><small>Total Transactions: {{ total_count }}</small></div>
+  {% if kind == 'Deposit' %}
+   {% for owner, data in summary_groups.items() %}<div class="summary-card light"><div class="caption">{{ owner }}</div><strong>₹{{ '%.2f'|format(data.amount) }}</strong><small>Transactions: {{ data.count }}</small></div>{% endfor %}
+  {% else %}
+   <div class="summary-card green"><div class="caption">SUCCESSFUL</div><strong>₹{{ '%.2f'|format(status_totals['Successful'].amount) }}</strong><small>Transactions: {{ status_totals['Successful'].count }}</small></div>
+   <div class="summary-card orange"><div class="caption">PENDING</div><strong>₹{{ '%.2f'|format(status_totals['Pending'].amount) }}</strong><small>Transactions: {{ status_totals['Pending'].count }}</small></div>
+   <div class="summary-card red"><div class="caption">CANCELLED</div><strong>₹{{ '%.2f'|format(status_totals['Cancelled'].amount) }}</strong><small>Transactions: {{ status_totals['Cancelled'].count }}</small></div>
+  {% endif %}
+ </div>
+ <form class="table-tools" method="get">
+  <label>Show <select name="show" onchange="this.form.submit()">{% for n in [10,25,50,100] %}<option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>{% endfor %}</select> entries</label>
+  <label>Search: <input type="search" name="q" value="{{ search }}" placeholder="Mobile, username, ID..."></label>
+  <input type="hidden" name="start_date" value="{{ start_date }}"><input type="hidden" name="end_date" value="{{ end_date }}">
+ </form>
+ <div class="table-wrap"><table class="report-table"><thead><tr><th>ID</th><th>Mobile</th><th>Username</th><th>Amount</th>{% if kind == 'Withdraw' %}<th>Status</th>{% endif %}<th>Date &amp; Time</th></tr></thead><tbody>
+ {% for tx in transactions %}<tr><td>{{ tx.id }}</td><td>{{ tx.user.phone if tx.user else '—' }}</td><td>{{ tx.user.name if tx.user else 'ADMIN' }}</td><td>{{ '%.2f'|format(tx.amount or 0) }}</td>{% if kind == 'Withdraw' %}<td><span class="status-pill">{{ tx.status|upper }}</span></td>{% endif %}<td>{{ tx.created_at.strftime('%d/%m/%Y %I:%M %p') if tx.created_at else '—' }}</td></tr>
+ {% else %}<tr><td class="empty" colspan="{{ 6 if kind == 'Withdraw' else 5 }}">No data available in table</td></tr>{% endfor %}
+ </tbody></table></div>
+ <div class="report-footer"><span>Showing {{ ((page-1)*per_page+1) if total_count else 0 }} to {{ [page*per_page,total_count]|min }} of {{ total_count }} entries</span><span><a class="{% if page <= 1 %}disabled{% endif %}" href="?start_date={{ start_date }}&end_date={{ end_date }}&q={{ search|urlencode }}&show={{ per_page }}&page={{ page-1 }}">Previous</a><a>{{ page }} / {{ total_pages }}</a><a class="{% if page >= total_pages %}disabled{% endif %}" href="?start_date={{ start_date }}&end_date={{ end_date }}&q={{ search|urlencode }}&show={{ per_page }}&page={{ page+1 }}">Next</a></span></div>
+</section>
+{% endblock %}

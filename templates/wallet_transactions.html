@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ kind }} Transactions · SHREE SHYAM{% endblock %}
+{% block page_heading %}{{ kind }} Transactions{% endblock %}
+{% block content %}
+<style>
+.tx-panel{background:#fff;border:1px solid #e5e3eb;border-radius:13px;padding:20px;box-shadow:0 3px 14px #2410440b}
+.tx-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:-20px -20px 18px;padding:16px 20px;border-radius:12px 12px 0 0;background:linear-gradient(100deg,#5822a4,#8c159e,#b51c48);color:#fff}
+.tx-head h2{margin:0;font-size:20px}.tx-total{font-weight:700;font-size:17px}
+.tx-filters{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:12px 0 18px}
+.tx-filters input,.tx-filters select{padding:9px 10px;border:1px solid #d8d5df;border-radius:7px;font:inherit;background:#fff}
+.tx-filters button{padding:9px 15px;border:0;border-radius:7px;background:#6327a4;color:#fff;font-weight:600;cursor:pointer}
+.tx-table-wrap{overflow-x:auto}.tx-table{width:100%;border-collapse:collapse;min-width:850px}.tx-table th{background:#54218f;color:#fff;font-size:13px}.tx-table th,.tx-table td{padding:12px 10px;border:1px solid #e2dfeb;text-align:left}.tx-table tbody tr:nth-child(even){background:#f6f7fb}.tx-empty{text-align:center;padding:25px!important;color:#777}
+.tx-status{display:inline-block;padding:4px 9px;border-radius:20px;background:#fff1d6;color:#98620a;font-size:12px;font-weight:700}.tx-status.success,.tx-status.completed{background:#e5f8eb;color:#147a37}.tx-status.rejected,.tx-status.cancelled{background:#ffe8e8;color:#b42318}
+.tx-footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px;color:#777;font-size:13px}.tx-footer a{display:inline-block;padding:7px 11px;border:1px solid #ddd;border-radius:6px;text-decoration:none;color:#5b269c;margin-left:4px}.tx-footer a.disabled{opacity:.4;pointer-events:none}
+@media(max-width:700px){.tx-panel{padding:13px}.tx-head{margin:-13px -13px 14px;padding:13px}.tx-filters>*{flex:1;min-width:130px}}
+</style>
+<section class="tx-panel">
+ <div class="tx-head"><h2>▣ {{ kind }} Transactions</h2><div class="tx-total">Total: ₹{{ '%.2f'|format(total_amount) }} · {{ total_count }} records</div></div>
+ <form class="tx-filters" method="get">
+  <input type="date" name="start_date" value="{{ start_date }}" aria-label="From date">
+  <input type="date" name="end_date" value="{{ end_date }}" aria-label="To date">
+  <select name="status"><option value="">All Statuses</option>{% for item in ['Pending','Successful','Completed','Approved','Rejected','Cancelled','Failed'] %}<option value="{{ item }}" {% if status|lower == item|lower %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+  <input type="search" name="q" value="{{ search }}" placeholder="Search user, mobile, ID...">
+  <input type="hidden" name="show" value="{{ per_page }}"><button type="submit">Search</button>
+ </form>
+ <div class="tx-filters"><label>Show <select onchange="const u=new URL(location.href);u.searchParams.set('show',this.value);u.searchParams.set('page','1');location.href=u"><option value="10" {% if per_page==10 %}selected{% endif %}>10</option><option value="25" {% if per_page==25 %}selected{% endif %}>25</option><option value="50" {% if per_page==50 %}selected{% endif %}>50</option><option value="100" {% if per_page==100 %}selected{% endif %}>100</option></select> entries</label></div>
+ <div class="tx-table-wrap"><table class="tx-table"><thead><tr><th>Transaction ID</th><th>User Name</th><th>Username</th><th>Mobile Number</th><th>Amount</th><th>Status</th><th>Details</th><th>Date &amp; Time</th></tr></thead><tbody>
+ {% for tx in transactions %}<tr><td>#{{ tx.id }}</td><td>{{ tx.user.name if tx.user else 'ADMIN' }}</td><td>{{ tx.user.username if tx.user else '—' }}</td><td>{{ tx.user.phone if tx.user else '—' }}</td><td>₹{{ '%.2f'|format(tx.amount or 0) }}</td><td><span class="tx-status {{ (tx.status or '')|lower }}">{{ tx.status or 'Pending' }}</span></td><td>{{ tx.note or '—' }}</td><td>{{ tx.created_at.strftime('%d/%m/%Y %I:%M %p') if tx.created_at else '—' }}</td></tr>
+ {% else %}<tr><td class="tx-empty" colspan="8">No {{ kind|lower }} transactions found.</td></tr>{% endfor %}
+ </tbody></table></div>
+ <div class="tx-footer"><span>Showing {{ ((page-1)*per_page+1) if total_count else 0 }} to {{ [page*per_page,total_count]|min }} of {{ total_count }} entries</span><span><a class="{% if page<=1 %}disabled{% endif %}" href="?start_date={{ start_date }}&end_date={{ end_date }}&status={{ status|urlencode }}&q={{ search|urlencode }}&show={{ per_page }}&page={{ page-1 }}">Previous</a><a>{{ page }} / {{ total_pages }}</a><a class="{% if page>=total_pages %}disabled{% endif %}" href="?start_date={{ start_date }}&end_date={{ end_date }}&status={{ status|urlencode }}&q={{ search|urlencode }}&show={{ per_page }}&page={{ page+1 }}">Next</a></span></div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if user else 'Add' }} User{% endblock %}
+{% block page_heading %}{{ 'Edit User' if user else 'Add User' }}{% endblock %}
+{% block content %}<section class="panel form-panel"><div class="panel-head"><div><h2>User Details</h2><p>Fields marked required must be completed.</p></div></div>
+<form method="post" class="form-grid">
+<label>Full name *<input name="name" required value="{{ user.name if user else '' }}"></label>
+<label>Username *<input name="username" required value="{{ user.username if user else '' }}"></label>
+<label>Phone<input name="phone" value="{{ user.phone if user else '' }}"></label>
+<label>Email<input type="email" name="email" value="{{ user.email if user else '' }}"></label>
+<label>Demo points<input type="number" step="0.01" min="0" name="points" value="{{ user.points if user else 0 }}"></label>
+<label>Status<select name="status"><option {% if not user or user.status == 'Active' %}selected{% endif %}>Active</option><option {% if user and user.status == 'Inactive' %}selected{% endif %}>Inactive</option></select></label>
+<div class="form-actions"><button class="btn primary" type="submit">Save User</button><a class="btn light" href="{{ url_for('users') }}">Cancel</a></div>
+</form></section>{% endblock %}

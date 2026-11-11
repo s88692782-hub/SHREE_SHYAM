@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title">
+<title id="title">Shree Shyam</title>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6b2bbd"/><stop offset="1" stop-color="#c51e4a"/></linearGradient></defs>
+<rect x="2" y="2" width="116" height="116" rx="24" fill="url(#g)"/>
+<path d="M58 14 C20 34 28 75 58 91 C88 75 96 34 58 14Z" fill="#16a58c" stroke="#f4c64e" stroke-width="4"/>
+<path d="M58 25 C39 42 42 66 58 78 C74 66 77 42 58 25Z" fill="#1473bd" stroke="#d7f2ef" stroke-width="2"/>
+<circle cx="58" cy="52" r="9" fill="#f4c64e"/><circle cx="58" cy="52" r="4" fill="#29205c"/>
+<path d="M25 91 Q58 78 91 91" fill="none" stroke="#f4c64e" stroke-width="5" stroke-linecap="round"/>
+<text x="137" y="61" font-family="Arial,sans-serif" font-size="43" font-weight="800" fill="#54218f">SHREE SHYAM</text>
+<text x="140" y="91" font-family="Arial,sans-serif" font-size="17" letter-spacing="4" font-weight="700" fill="#a41b48">ADMIN PANEL</text>
+</svg>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Game Providers{% endblock %}
+{% block page_heading %}Game Providers{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-head"><div><h2>Market Management</h2><p>Add and manage markets with a separate schedule for every day.</p></div>
+    <a class="btn primary" href="{{ url_for('market_add') }}">＋ Add Market</a></div>
+  <form class="toolbar" method="get">
+    <label class="entries-label">Show
+      <select name="show" onchange="this.form.submit()">
+        {% for n in [10,25,50,100] %}<option value="{{ n }}" {% if show == n %}selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select> entries
+    </label>
+    <input name="q" value="{{ q }}" placeholder="Search market name">
+    <button class="btn dark">Search</button>
+    {% if q %}<a class="btn light" href="{{ url_for('module_page', slug='game-providers', show=show) }}">Clear</a>{% endif %}
+  </form>
+  <div class="table-wrap"><table class="market-table">
+    <thead><tr><th>Market</th>{% for day in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<th>{{ day }}</th>{% endfor %}<th>Actions</th></tr></thead>
+    <tbody>
+    {% for item in markets %}
+      <tr><td><strong>{{ item.market.name }}</strong></td>
+      {% for day in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}
+        {% set d = item.schedule.get(day, {}) %}
+        <td><span class="status {{ 'active' if d.get('active') else 'inactive' }}">{{ 'Active' if d.get('active') else 'Inactive' }}</span>
+          <small class="market-time">Open: {{ d.get('open', '09:25 PM') }}</small>
+          <small class="market-time">Close: {{ d.get('close', '11:25 PM') }}</small>
+        </td>
+      {% endfor %}
+      <td class="actions"><a class="btn tiny light" href="{{ url_for('market_edit', market_id=item.market.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('market_delete', market_id=item.market.id) }}" onsubmit="return confirm('Delete this market?')"><button class="btn tiny danger">Delete</button></form>
+      </td></tr>
+    {% else %}<tr><td colspan="9" class="empty">No markets added yet. Click Add Market to create one.</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+  <div class="pagination"><span>Showing {{ pagination.items|length }} of {{ pagination.total }} entries · Page {{ pagination.page }} of {{ pagination.pages or 1 }}</span><div>
+    {% if pagination.has_prev %}<a href="{{ url_for('module_page', slug='game-providers', page=pagination.prev_num, q=q, show=show) }}">← Previous</a>{% endif %}
+    {% if pagination.has_next %}<a href="{{ url_for('module_page', slug='game-providers', page=pagination.next_num, q=q, show=show) }}">Next →</a>{% endif %}
+  </div></div>
+</section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · SHREE SHYAM Admin{% endblock %}
+{% block page_heading %}Dashboard Overview{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <article class="stat-card"><div class="stat-top"><span>Total Users</span><span class="stat-icon">♟</span></div><strong>{{ stats.users }}</strong><small>Registered accounts</small><a href="{{ url_for('users') }}">More info <b>➜</b></a></article>
+  <article class="stat-card violet"><div class="stat-top"><span>Active Users</span><span class="stat-icon">✓</span></div><strong>{{ stats.active_users }}</strong><small>Currently active</small><a href="{{ url_for('users') }}">More info <b>➜</b></a></article>
+  <article class="stat-card red"><div class="stat-top"><span>Demo Records</span><span class="stat-icon">▤</span></div><strong>{{ stats.records }}</strong><small>Across all modules</small><a href="{{ url_for('module_page', slug='market-win-bid') }}">More info <b>➜</b></a></article>
+  <article class="stat-card dark"><div class="stat-top"><span>Pending Requests</span><span class="stat-icon">◷</span></div><strong>{{ stats.pending }}</strong><small>Demo transactions</small><a href="{{ url_for('module_page', slug='deposit-requests') }}">More info <b>➜</b></a></article>
+  <article class="stat-card"><div class="stat-top"><span>Demo Wallet Points</span><span class="stat-icon">₹</span></div><strong>{{ "%.2f"|format(stats.wallet) }}</strong><small>Not real currency</small><a href="{{ url_for('users') }}">More info <b>➜</b></a></article>
+  <article class="stat-card violet"><div class="stat-top"><span>Notices</span><span class="stat-icon">♧</span></div><strong>{{ stats.notices }}</strong><small>Published notifications</small><a href="{{ url_for('notifications') }}">More info <b>➜</b></a></article>
+</div>
+<div class="content-grid">
+  <section class="panel"><div class="panel-head"><div><h2>Recent Users</h2><p>Latest registered accounts</p></div><a class="text-link" href="{{ url_for('users') }}">View all</a></div>
+    <div class="table-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Status</th></tr></thead><tbody>
+    {% for user in recent_users %}<tr><td>{{ user.name }}</td><td>{{ user.username }}</td><td><span class="status {{ user.status|lower }}">{{ user.status }}</span></td></tr>{% else %}<tr><td colspan="3" class="empty">No users yet. Add your first user from All Users.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section class="panel"><div class="panel-head"><div><h2>Quick Actions</h2><p>Common admin tasks</p></div></div>
+    <div class="quick-actions"><a href="{{ url_for('user_add') }}">＋ Add User</a><a href="{{ url_for('notifications') }}">＋ Send Notification</a><a href="{{ url_for('module_add', slug='game-providers') }}">＋ Add Game Provider</a><a href="{{ url_for('settings') }}">⚙ Settings</a></div>
+  </section>
+</div>
+{% endblock %}

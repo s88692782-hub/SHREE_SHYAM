@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Request - SHREE SHYAM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            padding: 25px;
+        }
+        .card {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #ddd;
+        }
+        input, button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            box-sizing: border-box;
+            border-radius: 7px;
+        }
+        input { border: 1px solid #ccc; }
+        button {
+            background: #d97706;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        a { display: block; margin-top: 18px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Withdraw Request</h2>
+    <p>User: <b>{{ user.name }}</b></p>
+    <p>Registered Number: {{ user.phone }}</p>
+
+    <form method="POST">
+        <label>Enter Withdraw Amount (₹)</label>
+        <input type="number" name="amount" min="1" step="0.01" required>
+        <button type="submit">Send Request on WhatsApp</button>
+    </form>
+
+    <a href="{{ url_for('user_dashboard') }}">Back to Dashboard</a>
+</div>
+</body>
+</html>

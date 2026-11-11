@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if market else 'Add' }} Market{% endblock %}
+{% block page_heading %}{{ 'Edit' if market else 'Add' }} Market{% endblock %}
+{% block content %}
+<section class="panel form-panel">
+  <div class="panel-head"><div><h2>{{ 'Update' if market else 'New' }} Market</h2><p>Set Active/Inactive and opening/closing times for each weekday.</p></div></div>
+  <form method="post" class="market-editor">
+    <label class="market-name-field">Market Name *<input name="name" required maxlength="120" value="{{ market.name if market else '' }}" placeholder="e.g. Kalyan Night"></label>
+    <div class="market-days">
+    {% for day in days %}
+      {% set d = schedule.get(day, {}) %}
+      <div class="market-day-card">
+        <h3>{{ day }}</h3>
+        <label class="check-row"><input type="checkbox" name="{{ day }}_active" {% if d.get('active', true) %}checked{% endif %}> Active</label>
+        <label>Open Time<input type="text" name="{{ day }}_open" value="{{ d.get('open', '09:25 PM') }}" placeholder="09:25 PM"></label>
+        <label>Close Time<input type="text" name="{{ day }}_close" value="{{ d.get('close', '11:25 PM') }}" placeholder="11:25 PM"></label>
+      </div>
+    {% endfor %}
+    </div>
+    <div class="form-actions"><button class="btn primary" type="submit">Save Market</button><a class="btn light" href="{{ url_for('module_page', slug='game-providers') }}">Cancel</a></div>
+  </form>
+</section>
+{% endblock %}

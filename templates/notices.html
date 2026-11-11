@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Notice Management{% endblock %}
+{% block page_heading %}Notice Management{% endblock %}
+{% block content %}<div class="content-grid"><section class="panel"><div class="panel-head"><div><h2>Send Notification</h2><p>Publish a message in the admin demo.</p></div></div><form method="post" class="form-stack"><label>Notice title<input name="title" required></label><label>Message<textarea name="body" rows="5" required></textarea></label><button class="btn primary">Publish Notice</button></form></section>
+<section class="panel"><div class="panel-head"><div><h2>Published Notices</h2><p>{{ notices|length }} notice(s)</p></div></div>{% for notice in notices %}<article class="notice-item"><div><strong>{{ notice.title }}</strong><p>{{ notice.body }}</p><small>{{ notice.created_at.strftime('%d %b %Y, %I:%M %p') }}</small></div><form method="post" action="{{ url_for('notice_delete', notice_id=notice.id) }}"><button class="btn tiny danger">Delete</button></form></article>{% else %}<p class="empty">No notices published.</p>{% endfor %}</section></div>{% endblock %}
