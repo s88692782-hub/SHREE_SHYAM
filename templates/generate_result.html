@@ -86,7 +86,10 @@ button:hover { background: #0568ce; }
     background: #e8f4ff;
 }
 
-.table-wrap { overflow-x: auto; padding: 10px; }
+.table-wrap {
+    overflow-x: auto;
+    padding: 10px;
+}
 
 table {
     width: 100%;
@@ -137,8 +140,10 @@ th {
             <form method="POST">
 
                 <label>Date</label>
-                <input type="date" name="result_date"
-                       value="{{ today }}" required>
+                <input type="date"
+                       name="result_date"
+                       value="{{ today }}"
+                       required>
 
                 <label>Game</label>
                 <select name="market_id" required>
@@ -158,19 +163,27 @@ th {
                 </select>
 
                 <label>Search Pana Number</label>
-                <input type="text" id="panaSearch" placeholder="Search Pana..." maxlength="3">
+                <input type="text"
+                       id="panaSearch"
+                       placeholder="Search Pana..."
+                       maxlength="3"
+                       autocomplete="off">
+
                 <label>Pana</label>
                 <select name="pana" id="pana" required>
                     <option value="">Select Pana</option>
                     {% for item in pana_numbers %}
-                        <option value="{{ item.number }}">{{ item.number }}</option>
+                        <option value="{{ item.number }}">
+                            {{ item.number }}
+                        </option>
                     {% endfor %}
                 </select>
 
-
-
                 <label>Digit</label>
-                <input type="text" id="digit" readonly
+                <input type="text"
+                       name="digit"
+                       id="digit"
+                       readonly
                        placeholder="Automatic Digit">
 
                 <button type="submit">SAVE</button>
@@ -187,7 +200,6 @@ th {
                 <thead>
                     <tr>
                         <th>#</th>
-                        <td>{{ loop.index }}</td>
                         <th>Game Name</th>
                         <th>Result Date</th>
                         <th>Open Pana</th>
@@ -210,7 +222,7 @@ th {
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6">No results declared yet.</td>
+                        <td colspan="7">No results declared yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -220,40 +232,47 @@ th {
 
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const panaSelect = document.getElementById("pana");
+    const digitInput = document.getElementById("digit");
+    const panaSearch = document.getElementById("panaSearch");
 
-const panaSelect = document.getElementById("pana");
-const digitInput = document.getElementById("digit");
-const panaSearch = document.getElementById("panaSearch");
+    const originalOptions = Array.from(panaSelect.options).slice(1);
 
-const originalOptions = Array.from(panaSelect.options).slice(1);
+    // Search Pana Number
+    panaSearch.addEventListener("input", function () {
 
-panaSearch.addEventListener("input", function () {
-    const search = this.value.trim();
+        const search = this.value.trim();
 
-    panaSelect.innerHTML = '<option value="">Select Pana</option>';
+        panaSelect.innerHTML =
+            '<option value="">Select Pana</option>';
 
-    originalOptions.forEach(option => {
-        if (option.value.includes(search)) {
-            panaSelect.appendChild(option.cloneNode(true));
-        }
+        originalOptions.forEach(function (option) {
+            if (option.value.includes(search)) {
+                panaSelect.appendChild(option.cloneNode(true));
+            }
+        });
+
+        digitInput.value = "";
     });
 
-    digitInput.value = "";
+    // Automatic Digit Calculation
+    panaSelect.addEventListener("change", function () {
+
+        if (!this.value) {
+            digitInput.value = "";
+            return;
+        }
+
+        digitInput.value = this.value
+            .split("")
+            .reduce((sum, n) => sum + Number(n), 0) % 10;
+
+    });
+
 });
-
-panaSelect.addEventListener("change", function () {
-    if (!this.value) {
-        digitInput.value = "";
-        return;
-    }
-
-    digitInput.value = this.value
-        .split("")
-        .reduce((sum, n) => sum + Number(n), 0) % 10;
-});
-
-
 </script>
 
 </body>
