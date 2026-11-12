@@ -187,6 +187,7 @@ th {
                 <thead>
                     <tr>
                         <th>#</th>
+                        <td>{{ loop.index }}</td>
                         <th>Game Name</th>
                         <th>Result Date</th>
                         <th>Open Pana</th>
@@ -209,7 +210,7 @@ th {
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7">No results declared yet.</td>
+                        <td colspan="6">No results declared yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
