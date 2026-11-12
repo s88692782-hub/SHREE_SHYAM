@@ -156,8 +156,9 @@ th {
                     <option value="Open">Open</option>
                     <option value="Close">Close</option>
                 </select>
+
                 <label>Search Pana Number</label>
-                <input type="text" id="panaSearch" placeholder="Type Pana Number..." maxlength="3" autocomplete="off">
+                <input type="text" id="panaSearch" placeholder="Search Pana..." maxlength="3">
                 <label>Pana</label>
                 <select name="pana" id="pana" required>
                     <option value="">Select Pana</option>
@@ -165,6 +166,7 @@ th {
                         <option value="{{ item.number }}">{{ item.number }}</option>
                     {% endfor %}
                 </select>
+
 
 
                 <label>Digit</label>
@@ -218,28 +220,21 @@ th {
 </div>
 
 
+
 const panaSelect = document.getElementById("pana");
 const digitInput = document.getElementById("digit");
 const panaSearch = document.getElementById("panaSearch");
 
-const allPanaOptions = Array.from(panaSelect.options)
-    .slice(1)
-    .map(option => ({
-        value: option.value,
-        text: option.text
-    }));
+const originalOptions = Array.from(panaSelect.options).slice(1);
 
 panaSearch.addEventListener("input", function () {
     const search = this.value.trim();
 
     panaSelect.innerHTML = '<option value="">Select Pana</option>';
 
-    allPanaOptions.forEach(item => {
-        if (item.value.includes(search)) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.textContent = item.text;
-            panaSelect.appendChild(option);
+    originalOptions.forEach(option => {
+        if (option.value.includes(search)) {
+            panaSelect.appendChild(option.cloneNode(true));
         }
     });
 
@@ -252,12 +247,11 @@ panaSelect.addEventListener("change", function () {
         return;
     }
 
-    const digit = this.value
+    digitInput.value = this.value
         .split("")
-        .reduce((sum, number) => sum + Number(number), 0) % 10;
-
-    digitInput.value = digit;
+        .reduce((sum, n) => sum + Number(n), 0) % 10;
 });
+
 
 </script>
 

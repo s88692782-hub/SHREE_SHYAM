@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime, date
 import json
 import os
+import random
 from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
 from sqlalchemy import or_, cast, String
 from config import Config
@@ -556,9 +557,9 @@ def module_page(slug):
                 PanaNumber.number.ilike(f"%{q}%")
             )
 
-        pana_numbers = query.order_by(
-            PanaNumber.number.asc()
-        ).all()
+        pana_numbers = query.all()
+        import random
+        random.shuffle(pana_numbers)
 
         return render_template(
             "pana_management.html",
