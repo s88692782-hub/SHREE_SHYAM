@@ -558,7 +558,7 @@ def module_page(slug):
             )
 
         pana_numbers = query.all()
-        import random
+
         random.shuffle(pana_numbers)
 
         return render_template(
