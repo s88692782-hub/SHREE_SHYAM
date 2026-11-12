@@ -156,15 +156,16 @@ th {
                     <option value="Open">Open</option>
                     <option value="Close">Close</option>
                 </select>
-
+                <label>Search Pana Number</label>
+                <input type="text" id="panaSearch" placeholder="Type Pana Number..." maxlength="3" autocomplete="off">
                 <label>Pana</label>
                 <select name="pana" id="pana" required>
                     <option value="">Select Pana</option>
                     {% for item in pana_numbers %}
-                        <option value="{{ item.number }}">{{ item.number }}
-                        </option>
+                        <option value="{{ item.number }}">{{ item.number }}</option>
                     {% endfor %}
                 </select>
+
 
                 <label>Digit</label>
                 <input type="text" id="digit" readonly
@@ -216,11 +217,36 @@ th {
 
 </div>
 
-<script>
+
 const panaSelect = document.getElementById("pana");
 const digitInput = document.getElementById("digit");
+const panaSearch = document.getElementById("panaSearch");
 
-panaSelect.addEventListener("change", function() {
+const allPanaOptions = Array.from(panaSelect.options)
+    .slice(1)
+    .map(option => ({
+        value: option.value,
+        text: option.text
+    }));
+
+panaSearch.addEventListener("input", function () {
+    const search = this.value.trim();
+
+    panaSelect.innerHTML = '<option value="">Select Pana</option>';
+
+    allPanaOptions.forEach(item => {
+        if (item.value.includes(search)) {
+            const option = document.createElement("option");
+            option.value = item.value;
+            option.textContent = item.text;
+            panaSelect.appendChild(option);
+        }
+    });
+
+    digitInput.value = "";
+});
+
+panaSelect.addEventListener("change", function () {
     if (!this.value) {
         digitInput.value = "";
         return;
@@ -232,6 +258,7 @@ panaSelect.addEventListener("change", function() {
 
     digitInput.value = digit;
 });
+
 </script>
 
 </body>

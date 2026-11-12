@@ -2,123 +2,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container-fluid">
+    <h2 class="mb-4">Pana Numbers</h2>
 
-    <h2 class="mb-4">Pana Number Management</h2>
-
-    <!-- Add Pana Numbers -->
     <div class="card mb-4">
         <div class="card-body">
-
             <h5>Add Pana Numbers</h5>
-
-            <form method="POST"
-                  action="{{ url_for('pana_add') }}">
-
-                <textarea
-                    name="numbers"
-                    class="form-control mb-3"
-                    rows="6"
-                    placeholder="Enter one Pana number per line&#10;128&#10;137&#10;146"
-                    required></textarea>
-
-                <button type="submit"
-                        class="btn btn-primary">
+            <form method="POST" action="{{ url_for('pana_add') }}">
+                <textarea name="numbers"
+                          class="form-control mb-3"
+                          rows="5"
+                          placeholder="128&#10;137&#10;146"
+                          required></textarea>
+                <button type="submit" class="btn btn-primary">
                     Add Numbers
                 </button>
-
             </form>
-
         </div>
     </div>
 
-    <!-- Search -->
     <div class="card">
         <div class="card-body">
-
             <h5>Pana Number List</h5>
-
-            <form method="GET"
-                  action="{{ url_for('module_page', slug='pana-management') }}"
-                  class="mb-3">
-
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ q }}"
-                    class="form-control"
-                    placeholder="Search Pana Number..."
-                    maxlength="3">
-
-                <button class="btn btn-dark mt-2"
-                        type="submit">
-                    Search
-                </button>
-
-                <a href="{{ url_for('module_page', slug='pana-management') }}"
-                   class="btn btn-secondary mt-2">
-                    Reset
-                </a>
-
-            </form>
-
-            <p>Total Numbers: {{ pana_numbers|length }}</p>
-
-            <div class="list-group">
-
+            <div class="d-flex flex-wrap gap-2">
                 {% for item in pana_numbers %}
-
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-
-                    <strong>{{ item.number }}</strong>
-
-                    <div class="d-flex gap-2">
-
-                        <span class="badge {% if item.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ item.status }}
-                        </span>
-
-                        <form method="POST"
-                              action="{{ url_for('pana_toggle', pana_id=item.id) }}">
-
-                            <button class="btn btn-sm btn-warning"
-                                    type="submit">
-                                {% if item.status == 'Active' %}
-                                    Deactivate
-                                {% else %}
-                                    Activate
-                                {% endif %}
-                            </button>
-
-                        </form>
-
-                        <form method="POST"
-                              action="{{ url_for('pana_delete', pana_id=item.id) }}"
-                              onsubmit="return confirm('Delete this Pana number?');">
-
-                            <button class="btn btn-sm btn-danger"
-                                    type="submit">
-                                Delete
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
+                    <span class="badge bg-light text-dark border p-3"
+                          style="font-size:18px;">
+                        {{ item.number }}
+                    </span>
                 {% else %}
-
-                <p>No Pana numbers found.</p>
-
+                    <p>No Pana numbers added yet.</p>
                 {% endfor %}
-
             </div>
-
         </div>
     </div>
-
 </div>
-
 {% endblock %}
