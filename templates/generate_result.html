@@ -159,7 +159,11 @@ th {
 
                 <label>Pana</label>
                 <select name="pana" id="pana" required>
-                    <option value="">Select an option</option>
+                    <option value="">Select Pana</option>
+                    {% for item in pana_numbers %}
+                        <option value="{{ item.number }}">{{ item.number }}
+                        </option>
+                    {% endfor %}
                 </select>
 
                 <label>Digit</label>
@@ -216,18 +220,6 @@ th {
 const panaSelect = document.getElementById("pana");
 const digitInput = document.getElementById("digit");
 
-// Generate 3-digit Pana options
-for (let i = 0; i <= 999; i++) {
-    const pana = String(i).padStart(3, "0");
-    const option = document.createElement("option");
-
-    option.value = pana;
-    option.textContent = pana;
-
-    panaSelect.appendChild(option);
-}
-
-// Automatically calculate Digit
 panaSelect.addEventListener("change", function() {
     if (!this.value) {
         digitInput.value = "";

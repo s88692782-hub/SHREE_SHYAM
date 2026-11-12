@@ -127,3 +127,12 @@ class GameResult(db.Model):
         default=lambda: datetime.utcnow().date()
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PanaNumber(db.Model):
+    __tablename__ = "pana_numbers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String(3), unique=True, nullable=False)
+    status = db.Column(db.String(20), default="Active")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

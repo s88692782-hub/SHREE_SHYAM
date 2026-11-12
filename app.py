@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from sqlalchemy import or_, cast, String
 from config import Config
 from urllib.parse import quote
-from models import db, Admin, User, Record, Notice, WalletTransaction, Market, GameRate,UserGameHistory,GameResult
+from models import db, Admin, User, Record, Notice, WalletTransaction, Market, GameRate, UserGameHistory, GameResult,PanaNumber
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -28,6 +28,7 @@ MENU_GROUPS = [
     {"label": "Game Management", "icon": "🎮", "items": [
         ("Game Providers", "game-providers"),
         ("Game Rates", "game-rates"),
+        ("Pana Management", "pana-management"),
         ("Game Result", "game-result"),
         ("Generate Result", "/generate-result"),
         ("Bid Revert", "bid-revert"),
@@ -78,6 +79,7 @@ MENU_GROUPS = [
 ]
 
 MODULE_TITLES = {}
+MODULE_TITLES["pana-management"] = "Pana Management"
 for group in MENU_GROUPS:
     if group.get("single") and group["single"] not in ("dashboard", "users", "settings"):
         MODULE_TITLES[group["single"]] = group["label"]
@@ -544,6 +546,27 @@ def module_page(slug):
         rates = GameRate.query.order_by(GameRate.id.asc()).all()
         return render_template("game_rates.html", title=MODULE_TITLES[slug], rates=rates)
 
+    if slug == "pana-management":
+        q = request.args.get("q", "").strip()
+
+        query = PanaNumber.query
+
+        if q:
+            query = query.filter(
+                PanaNumber.number.ilike(f"%{q}%")
+            )
+
+        pana_numbers = query.order_by(
+            PanaNumber.number.asc()
+        ).all()
+
+        return render_template(
+            "pana_management.html",
+            title="Pana Management",
+            pana_numbers=pana_numbers,
+            q=q
+        )
+
 
     if slug == "cutting-list":
         selected_date = request.args.get("date", "").strip()
@@ -942,6 +965,10 @@ def user_withdraw():
 def generate_result():
     markets = Market.query.order_by(Market.name.asc()).all()
 
+    pana_numbers = PanaNumber.query.filter_by(
+        status="Active"
+    ).order_by(PanaNumber.number.asc()).all()
+
     if request.method == "POST":
         market_id = request.form.get("market_id", type=int)
         result_session = request.form.get("session", "").strip()
@@ -953,8 +980,16 @@ def generate_result():
         if not market or result_session not in ("Open", "Close"):
             flash("Please select a valid market and session.", "danger")
 
-        elif len(pana) != 3 or not pana.isdigit():
-            flash("Please select a valid 3-digit Pana.", "danger")
+
+        elif not PanaNumber.query.filter_by(
+
+                number=pana,
+
+                status="Active"
+
+        ).first():
+
+            flash("Please select an active Pana number.", "danger")
 
         else:
             try:
@@ -1026,8 +1061,10 @@ def generate_result():
         "generate_result.html",
         markets=markets,
         results=results,
+        pana_numbers=pana_numbers,
         today=datetime.now().strftime("%Y-%m-%d")
     )
+
 
 
 
@@ -1060,6 +1097,64 @@ def initialize_database():
             if not GameRate.query.filter_by(game_name=game_name).first():
                 db.session.add(GameRate(game_name=game_name, rate=rate_value))
         db.session.commit()
+
+@app.route("/admin/pana-management/add", methods=["POST"])
+@login_required
+def pana_add():
+    numbers_text = request.form.get("numbers", "")
+
+    numbers = numbers_text.replace(",", "\n").splitlines()
+
+    added = 0
+
+    for number in numbers:
+        number = number.strip()
+
+        if not number:
+            continue
+
+        if len(number) != 3 or not number.isdigit():
+            continue
+
+        existing = PanaNumber.query.filter_by(number=number).first()
+
+        if not existing:
+            db.session.add(PanaNumber(
+                number=number,
+                status="Active"
+            ))
+            added += 1
+
+    db.session.commit()
+
+    flash(f"{added} Pana numbers added successfully.", "success")
+    return redirect(url_for("module_page", slug="pana-management"))
+
+
+@app.route("/admin/pana-management/<int:pana_id>/toggle", methods=["POST"])
+@login_required
+def pana_toggle(pana_id):
+    pana = PanaNumber.query.get_or_404(pana_id)
+
+    pana.status = (
+        "Inactive" if pana.status == "Active" else "Active"
+    )
+
+    db.session.commit()
+
+    return redirect(url_for("module_page", slug="pana-management"))
+
+
+@app.route("/admin/pana-management/<int:pana_id>/delete", methods=["POST"])
+@login_required
+def pana_delete(pana_id):
+    pana = PanaNumber.query.get_or_404(pana_id)
+
+    db.session.delete(pana)
+    db.session.commit()
+
+    flash("Pana number deleted.", "success")
+    return redirect(url_for("module_page", slug="pana-management"))
 
 initialize_database()
 
