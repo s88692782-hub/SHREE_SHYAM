@@ -2,151 +2,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SHREE SHYAM - Play Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHREE SHYAM - Place Bet</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f4f8;
-        }
-
-        header {
-            background: #332477;
-            color: white;
-            padding: 18px;
-        }
-
-        header a {
-            color: white;
-            float: right;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 25px auto;
-            padding: 15px;
-        }
-
-        .card {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px #00000010;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0 18px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 7px;
-            font-size: 16px;
-            background: white;
-        }
-
-        button {
-            width: 100%;
-            padding: 13px;
-            background: #5635bd;
-            color: white;
-            border: 0;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .message {
-            color: #b42318;
-            margin: 10px 0;
-        }
-    </style>
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f6fc;
+    color:#17324d;
+}
+.header{
+    background:#1261a8;
+    color:white;
+    padding:18px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+.container{
+    max-width:500px;
+    margin:25px auto;
+    padding:15px;
+}
+.card{
+    background:white;
+    padding:22px;
+    border-radius:14px;
+    box-shadow:0 3px 15px #00000012;
+}
+.points{
+    background:#e8f3ff;
+    color:#07549b;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    font-size:19px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+label{
+    display:block;
+    margin:15px 0 7px;
+    font-weight:bold;
+}
+select,input{
+    width:100%;
+    padding:13px;
+    border:1px solid #cbd9e8;
+    border-radius:8px;
+    font-size:16px;
+    background:white;
+}
+.submit{
+    width:100%;
+    padding:15px;
+    margin-top:22px;
+    border:0;
+    border-radius:9px;
+    background:#1261a8;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.back{
+    display:block;
+    text-align:center;
+    margin-top:18px;
+    color:#1261a8;
+    text-decoration:none;
+    font-weight:bold;
+}
+.note{
+    color:#64748b;
+    font-size:12px;
+    margin-top:12px;
+    text-align:center;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-    <strong>SHREE SHYAM - Demo Play</strong>
-    <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
-</header>
+<div class="header">SHREE SHYAM</div>
 
 <div class="container">
-    <div class="card">
+<div class="card">
 
-        <h2>Play Demo Game</h2>
+<h2 style="text-align:center">Place Your Bet</h2>
 
-        <p>
-            Available Demo Points:
-            <strong>{{ user.points }}</strong>
-        </p>
+<div class="points">
+    Available Demo Points: {{ user.points }}
+</div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <p class="message">{{ message }}</p>
-            {% endfor %}
-        {% endwith %}
+<form method="POST" action="{{ url_for('user_play') }}">
 
-        <form method="POST">
+<label>Select Market</label>
+<select name="market_id" required>
+    <option value="">Select Market</option>
+    {% for market in markets %}
+    <option value="{{ market.id }}">{{ market.name }}</option>
+    {% endfor %}
+</select>
 
-            <label>Select Market</label>
-            <select name="market_id" required>
-                <option value="">Choose Market</option>
-                {% for market in markets %}
-                    <option value="{{ market.id }}">
-                        {{ market.name }}
-                    </option>
-                {% endfor %}
-            </select>
+<label>Select Game Type</label>
+<select name="game_type" required>
+    <option value="">Select Game</option>
+    {% for game in game_rates %}
+    <option value="{{ game.id }}">{{ game.game_name }}</option>
+    {% endfor %}
+</select>
 
-            <label>Select Game Type</label>
-            <select name="game_type" required>
-                <option value="">Choose Game</option>
-                {% for game in game_rates %}
-                    <option value="{{ game.game_name }}">
-                        {{ game.game_name }} - Rate {{ game.rate }}
-                    </option>
-                {% endfor %}
-            </select>
+<label>Select Session</label>
+<select name="session" required>
+    <option value="">Select Session</option>
+    <option value="Open">Open</option>
+    <option value="Close">Close</option>
+</select>
 
-            <label>Select Session</label>
-            <select name="session" required>
-                <option value="">Choose Session</option>
-                <option value="Open">Open</option>
-                <option value="Close">Close</option>
-            </select>
+<label>Enter Number</label>
+<input
+    type="text"
+    name="selection"
+    placeholder="Enter your number"
+    required
+    maxlength="10"
+    autocomplete="off"
+>
 
-            <label>Enter Demo Selection</label>
-            <input
-                type="text"
-                name="selection"
-                placeholder="Enter demo selection"
-                maxlength="255"
-                required
-            >
+<label>Enter Demo Points</label>
+<input
+    type="number"
+    name="points_used"
+    placeholder="Enter points"
+    min="1"
+    step="1"
+    required
+>
 
-            <label>Demo Points to Use</label>
-            <input
-                type="number"
-                name="points_used"
-                min="0.01"
-                step="0.01"
-                max="{{ user.points }}"
-                placeholder="Enter demo points"
-                required
-            >
+<button type="submit" class="submit">
+    SUBMIT BET
+</button>
 
-            <button type="submit">Submit Demo Game</button>
+</form>
 
-        </form>
+<a href="{{ url_for('user_dashboard') }}" class="back">
+    ← Back to Dashboard
+</a>
 
-    </div>
+<p class="note">
+    Demo Points only. No real-money betting or payment.
+</p>
+
+</div>
 </div>
 
 </body>
